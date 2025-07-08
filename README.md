@@ -35,8 +35,9 @@ Authenticate and return a JWT token with expiry.
   "username": "admin",
   "password": "adminpass"
 }
-or 
-curl command :
+```
+**curl command :**
+```
 curl -X POST "url" \
   -H "Content-Type: application/json" \
   -d '{"username": "admin", "password": "adminpass"}'
@@ -50,8 +51,9 @@ verify the token with jwt_token
 {
   "token": "jwt_token_here"
 }
-or 
-curl command : 
+```
+**curl command :** 
+```
 curl -X POST "url" \
   -H "Content-Type: application/json" \
   -d '{"token": "jwt_token_here"}'
@@ -66,9 +68,9 @@ validate the token using Authorization header
     Authorization: Bearer your_token_here
     Example: 
         Authorization: Bearer eyfhaody81398ejf
-or 
-
-curl command :
+```
+**curl command:**
+```
 curl -X GET "url" \
   -H "Authorization: Bearer jwt_token_here"
 ```

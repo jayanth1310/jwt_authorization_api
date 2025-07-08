@@ -77,8 +77,6 @@ def validate_token(request):
             'user': payload.get('username'),
             'expires': datetime.datetime.fromtimestamp(payload['exp']).isoformat() + 'Z'
         })
-    except jwt.ExpiredSignatureError:
-        return JsonResponse({'valid': False, 'message': 'Token has expired'}, status=401)
     except jwt.InvalidTokenError:
         return JsonResponse({'valid': False, 'message': 'Invalid token'}, status=401)
     except Exception as e:
