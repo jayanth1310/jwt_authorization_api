@@ -68,8 +68,6 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'jwt_auth_api.wsgi.application'
-
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
