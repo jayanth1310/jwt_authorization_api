@@ -5,7 +5,12 @@ from django.conf import settings
 import jwt
 import datetime
 import json
-
+from .models import DataEntry
+import boto3
+import uuid
+import json
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 # POST /api/auth/login/
 # This endpoint authenticates a user and returns a JWT token.
 # It expects a JSON body with 'username' and 'password'.
@@ -81,3 +86,50 @@ def validate_token(request):
         return JsonResponse({'valid': False, 'message': 'Invalid token'}, status=401)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=400)
+
+# Initialize DynamoDB client
+dynamodb = boto3.resource('dynamodb', region_name='ap-south-1')  # Change region
+table = dynamodb.Table('DataEntries')
+
+@csrf_exempt
+def insert_data(request):
+    """
+    POST: Insert key-value data into DynamoDB
+    JSON format: {"key": "username", "value": "jay123"}
+    """
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            key = data.get("key")
+            value = data.get("value")
+
+            if key is None or value is None:
+                return JsonResponse({'error': 'Key and value are required'}, status=400)
+
+            item = {
+                'id': str(uuid.uuid4()),  # Unique identifier
+                'key': key,
+                'value': value
+            }
+            table.put_item(Item=item)
+            return JsonResponse({'message': 'Data inserted', 'id': item['id']}, status=201)
+
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+
+    return JsonResponse({'error': 'Only POST method allowed'}, status=405)
+
+
+def retrieve_data(request):
+    """
+    GET: Retrieve all key-value pairs from DynamoDB
+    """
+    if request.method == 'GET':
+        try:
+            response = table.scan()
+            items = response.get('Items', [])
+            return JsonResponse(items, safe=False)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+
+    return JsonResponse({'error': 'Only GET method allowed'}, status=405)
